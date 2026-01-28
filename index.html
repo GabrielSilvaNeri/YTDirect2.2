@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>YTDirect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      background: #0f0f0f;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .box {
+      background: #1c1c1c;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #ff0000;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 15px;
+      word-break: break-all;
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box" id="ui" style="display:none">
+  <h2 style="color:#ff0000">YTDirect</h2>
+  <p>Gerar link direto para o app do YouTube</p>
+
+  <input id="yt" placeholder="Cole o link do YouTube">
+  <button onclick="gerar()">Gerar link</button>
+
+  <div class="result" id="res"></div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const videoId = params.get("v");
+
+  // ===== MODO REDIRECIONAMENTO (igual ao seu original) =====
+  if (videoId) {
+    const ua = navigator.userAgent;
+
+    if (/Android/i.test(ua)) {
+      location.href =
+        `intent://www.youtube.com/watch?v=${videoId}` +
+        `#Intent;package=com.google.android.youtube;scheme=https;end`;
+
+      setTimeout(() => {
+        location.href = `https://www.youtube.com/watch?v=${videoId}`;
+      }, 50);
+
+    } else if (/iPhone|iPad|iPod/i.test(ua)) {
+      location.href = `youtube://watch?v=${videoId}`;
+
+      setTimeout(() => {
+        location.href = `https://www.youtube.com/watch?v=${videoId}`;
+      }, 50);
+
+    } else {
+      location.href = `https://www.youtube.com/watch?v=${videoId}`;
+    }
+
+  // ===== MODO GERADOR =====
+  } else {
+    document.getElementById("ui").style.display = "block";
+  }
+
+  function gerar() {
+    const input = document.getElementById("yt").value.trim();
+    let id = null;
+
+    try {
+      const u = new URL(input);
+      id = u.searchParams.get("v");
+    } catch {}
+
+    if (!id) return alert("Link inválido");
+
+    document.getElementById("res").innerText =
+      `${location.origin}${location.pathname}?v=${id}`;
+  }
+</script>
+
+</body>
+</html>
